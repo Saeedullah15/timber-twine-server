@@ -26,7 +26,14 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         // await client.connect();
 
+        const craftCollection = client.db("craftDB").collection("craftCollection");
 
+        // API's here
+        app.post("/addItem", async (req, res) => {
+            const newItemInfo = req.body;
+            const result = await craftCollection.insertOne(newItemInfo);
+            res.send(result);
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
@@ -38,7 +45,7 @@ async function run() {
 }
 run().catch(console.dir);
 
-
+// testing api
 app.get("/", (req, res) => {
     res.send("art and craft store server is running....");
 })
