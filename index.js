@@ -47,6 +47,35 @@ async function run() {
             res.send(result);
         })
 
+        app.get("/myCraftItems/:email", async (req, res) => {
+            const email = req.params.email;
+            const query = { user_email: email };
+            const result = await craftCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.put("/updateItem/:id", async (req, res) => {
+            const id = req.params.id;
+            const updatedItemInfo = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    image: updatedItemInfo.image,
+                    item_name: updatedItemInfo.item_name,
+                    subcategory_name: updatedItemInfo.subcategory_name,
+                    description: updatedItemInfo.description,
+                    price: updatedItemInfo.price,
+                    rating: updatedItemInfo.rating,
+                    customization: updatedItemInfo.customization,
+                    processing_time: updatedItemInfo.processing_time,
+                    stock_status: updatedItemInfo.stock_status
+                }
+            };
+            const result = await craftCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
