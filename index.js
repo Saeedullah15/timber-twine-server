@@ -28,6 +28,20 @@ async function run() {
 
         const craftCollection = client.db("craftDB").collection("craftCollection");
 
+        // sub categories info posting to mongodb
+        const categoriesCollection = client.db("craftDB").collection("categoriesCollection");
+        const docs = [
+            { image: "https://i.ibb.co/28wJKpG/Stock-Snap-69-HGCEWOIR.jpg", subcategory_name: "Wooden Furniture & Sculptures" },
+            { image: "https://i.ibb.co/r0gNRV3/Stock-Snap-ZHZOIIFITB.jpg", subcategory_name: "Wooden Home Decor" },
+            { image: "https://i.ibb.co/vZnH6nH/Stock-Snap-49-FQQBTLIN.jpg", subcategory_name: "Wooden Utensils and Kitchenware" },
+            { image: "https://i.ibb.co/qxSFxkR/Stock-Snap-FOJAKAHGFY.jpg", subcategory_name: "Jute Home Decor" },
+            { image: "https://i.ibb.co/V33Qyyg/Stock-Snap-9-M2-UOGJ5-XN.jpg", subcategory_name: "Jute Kitchenware & utensils" },
+            { image: "https://i.ibb.co/qxSFxkR/Stock-Snap-FOJAKAHGFY.jpg", subcategory_name: "Jute and wooden jewellery" }
+        ];
+        const options = { ordered: true };
+        // const result = await categoriesCollection.insertMany(docs, options);
+        // console.log(`${result.insertedCount} documents were inserted`);
+
         // API's here
         app.post("/addItem", async (req, res) => {
             const newItemInfo = req.body;
@@ -39,6 +53,20 @@ async function run() {
             const cursor = await craftCollection.find().toArray();
             const result = res.send(cursor);
         })
+
+        // sub categories api start
+        app.get("/subcategories", async (req, res) => {
+            const cursor = await categoriesCollection.find().toArray();
+            const result = res.send(cursor);
+        })
+
+        app.get("/subcategoryItems/:subcategory", async (req, res) => {
+            const subcategory = req.params.subcategory;
+            const query = { subcategory_name: subcategory };
+            const result = await craftCollection.find(query).toArray();
+            res.send(result);
+        })
+        // sub categories api end
 
         app.get("/craftItemDetails/:id", async (req, res) => {
             const id = req.params.id;
